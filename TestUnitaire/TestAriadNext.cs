@@ -44,7 +44,7 @@ namespace TestUnitaire
                 new KeyValuePair<string, string>("password", ""), // add password from this JIRA https://upsideo.atlassian.net/browse/FIN-442
                 new KeyValuePair<string, string>("username", "up..@...") // add usernam from this JIRA https://upsideo.atlassian.net/browse/FIN-442
                  };
-                var AccesToken = "";
+                var AccesToken = ""; // key authentification
                 AuthentificationResultat authentificationResultat = new AuthentificationResultat();
                 using (var httpClientAuthentification = new HttpClient())
                 {
