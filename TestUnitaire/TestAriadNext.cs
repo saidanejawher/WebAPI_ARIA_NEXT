@@ -41,8 +41,8 @@ namespace TestUnitaire
                 new KeyValuePair<string, string>("broker", "demo"),
                 new KeyValuePair<string, string>("client_id", "sdk-web"),
                 new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("password", "28oy0S9aNJ"),
-                new KeyValuePair<string, string>("username", "upsideo@ariadnext.com")
+                new KeyValuePair<string, string>("password", ""), // add password from this JIRA https://upsideo.atlassian.net/browse/FIN-442
+                new KeyValuePair<string, string>("username", "up..@...") // add usernam from this JIRA https://upsideo.atlassian.net/browse/FIN-442
                  };
                 var AccesToken = "";
                 AuthentificationResultat authentificationResultat = new AuthentificationResultat();

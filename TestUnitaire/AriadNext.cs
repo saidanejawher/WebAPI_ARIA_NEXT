@@ -23,7 +23,7 @@ namespace TestUnitaire
         public List<string> values { get; set; }
     }
 
-    public class ZipCode
+    public class ZipCode 
     {
         public string label { get; set; }
         public string value { get; set; }
