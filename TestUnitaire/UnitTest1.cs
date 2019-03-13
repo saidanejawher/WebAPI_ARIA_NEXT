@@ -16,7 +16,7 @@ namespace TestUnitaire
     [TestClass]
     public class UnitTest1
     {
-        private string urlParameters = "?key=sYXLWU2FAYdrGqQPBEYjbRrk3vMu3eLd";
+        private string urlParameters = "?key=test";
 
         [TestMethod]
         public void TestMethod1()
@@ -25,7 +25,7 @@ namespace TestUnitaire
             new PdfHelper().GetMap();
             string annee = NumberConverter.Spell(2528.87, 2);
             Console.Write(annee);
-            var url = @"http://ws.perial.info/salesforce/preprod/souscription/read.php";
+            var url = @"http://perial................test..../souscription/read.php";
             try
             {
                 HttpClient client = new HttpClient
