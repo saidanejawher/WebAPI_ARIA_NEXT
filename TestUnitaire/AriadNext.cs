@@ -52,14 +52,7 @@ namespace TestUnitaire
         public List<Person> persons { get; set; }
     }
 
-    //public class Image
-    //{
-    //    public string data { get; set; }
-    //    public string documentPart { get; set; }
-    //    public string type { get; set; }
-    //    public string uid { get; set; }
-    //    public string source { get; set; }
-    //}
+   
     public class Image
     {
         public string data { get; set; }
@@ -122,7 +115,12 @@ namespace TestUnitaire
         public DateTime lastUpdateDate { get; set; }
         public InputData inputData { get; set; }
     }
-
+    public class DocToAnalyse : ResponseEachDocument
+    {
+        public LastReport lastReport { get; set; }
+        public string lastAnalysisStatus { get; set; }
+        public List<Report> reports { get; set; }
+    }
     // Searching Document 
     public class Document
     {

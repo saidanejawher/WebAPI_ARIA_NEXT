@@ -129,8 +129,10 @@
     <Compile Include="PdfHelper.cs" />
     <Compile Include="TestAriadNext.cs" />
     <Compile Include="TestBuildPdf.cs" />
+    <Compile Include="CtmsModel.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CTMSTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

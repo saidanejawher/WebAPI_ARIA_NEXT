@@ -21,11 +21,15 @@ namespace TestUnitaire
     public class TestAriadNext
     {
         public string url = @"C:\Projects\Test\docTest\JUSTIFDOM_14E_HCR061_Titulaire1.pdf";
+        public string urlJsonToAnalyse = @"C:\Projects\Test\docTest\JsonTest.json";
         [TestMethod]
         public async Task CallAriadNext()
         {
             try
             {
+                DateTime? dateTime = new DateTime(2015,02,19);
+                string d = dateTime.Value.ToString("dd/MM/yyy");
+
                 //---------------------- All files : 
 
                 var AllFiles = Directory.GetFiles(@"C:\Projects\Test\docTest\", "*.pdf");
@@ -41,8 +45,8 @@ namespace TestUnitaire
                 new KeyValuePair<string, string>("broker", "demo"),
                 new KeyValuePair<string, string>("client_id", "sdk-web"),
                 new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("password", ""),  // add password from this JIRA https://upsideo.atlassian.net/browse/FIN-442
-                new KeyValuePair<string, string>("username", "")  // add usernam from this JIRA https://upsideo.atlassian.net/browse/FIN-442
+                new KeyValuePair<string, string>("password", "28oy0S9aNJ"),  // add password from this JIRA https://upsideo.atlassian.net/browse/FIN-442
+                new KeyValuePair<string, string>("username", "upsideo@ariadnext.com")  // add usernam from this JIRA https://upsideo.atlassian.net/browse/FIN-442
                  };
                 var AccesToken = ""; // key authentification
                 AuthentificationResultat authentificationResultat = new AuthentificationResultat();
@@ -60,7 +64,8 @@ namespace TestUnitaire
                         AccesToken = authentificationResultat.access_token;
                     }
                 }
-             //   var jsonDocument = GetJsonInitObject(url);
+                #region Other method ariadnext
+                //   var jsonDocument = GetJsonInitObject(url);
                 //Creation des documents :
                 //var ListResponseCreationDocument = new List<ResponseCreateDocument>();
 
@@ -103,57 +108,56 @@ namespace TestUnitaire
                 //}
 
 
+                #endregion
 
                 //----------------- Create and Check : 
-               ///*
+                ///*
                 var ListResponseCreationAndCheckDocument = new List<Tuple<string, string>>();
                 IEnumerable<string> AllFilleWithoutCNVI = AllFiles;
                 List<string> pathsFilles = new List<string>();
-                var FilleWithoutVERSO = AllFiles.SkipWhile(x => x.Contains("VERSO"));
-                var FilleVERSO = AllFiles.Where(x => x.Contains("VERSO"));
-                foreach (var f in FilleWithoutVERSO) 
-                {
-                        pathsFilles.Add(f);
-                }
+                //var FilleWithoutVERSO = AllFiles.SkipWhile(x => x.Contains("VERSO"));
+                //var FilleVERSO = AllFiles.Where(x => x.Contains("VERSO"));
+                //foreach (var f in FilleWithoutVERSO) 
+                //{
+                //        pathsFilles.Add(f);
+                //}
 
-                foreach (var f in FilleVERSO) // integrer les verso qui ont pas de recto 
-                {
-                    var IfExistRecto = f.Replace("VERSO", "RECTO").Replace("CNIV", "CNI");
-                    if (!pathsFilles.Contains(IfExistRecto))
-                    {
-                        pathsFilles.Add(f);
-                    }
-                }
+                //foreach (var f in FilleVERSO) // integrer les verso qui ont pas de recto 
+                //{
+                //    var IfExistRecto = f.Replace("VERSO", "RECTO").Replace("CNIV", "CNI");
+                //    if (!pathsFilles.Contains(IfExistRecto))
+                //    {
+                //        pathsFilles.Add(f);
+                //    }
+                //}
 
-                foreach (var doc in pathsFilles)
+
+                // CHECK DOC : 
+
+                foreach (var doc in AllFiles)
                 {
                     var fileName = Path.GetFileName(doc);
                     var SecondeDoc = HelperAllFile(AllFiles, doc);
                     var jsonDocument = "";
-                    if (SecondeDoc != "")
-                    {
-                        jsonDocument = GetJsonInitObject(doc ,"ID", SecondeDoc);
-                        fileName = fileName.Replace(".pdf", "_VERSO.pdf");
-                    }
-                    else
-                    {
-                        //jsonDocument = GetJsonInitObject(doc , "ADDRESS_PROOF"); // test ADDRESS_PROOF
-                        jsonDocument = GetJsonInitObject(doc , "LEGAL_ENTITY"); // test LEGAL_ENTITY
-                    }
+
+                    jsonDocument = GetJsonInitObject(doc, "ADDRESS_PROOF"); // test ADDRESS_PROOF
+                    jsonDocument = GetJsonInitObject(doc, "LEGAL_ENTITY"); // test LEGAL_ENTITY
+                    jsonDocument = GetJsonInitObject(doc); // test LEGAL_ENTITY
+
                     var watch = new Stopwatch();
-                    
+
                     using (var Client = new HttpClient() { BaseAddress = new Uri("https://api-test.ariadnext.com/gw/cis/") })
                     {
                         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccesToken);
                         var content = new StringContent(jsonDocument, Encoding.UTF8, "application/json");
-                        //var result = Client.PostAsync("rest/v1/demo/document/check", content).Result;
+                        var resultX = Client.PostAsync("rest/v1/demo/document/check", content).Result;
                         watch.Start();
                         var result = Client.PostAsync("rest/v1/demo/document/check?synchronous=true", content).Result;
                         watch.Stop();
                         var responseString = await result.Content.ReadAsStringAsync();
                         ListResponseCreationAndCheckDocument.Add(Tuple.Create(responseString, fileName));
                     }
-                    
+
                     var TempEcouler = watch.Elapsed;
                 }
                 foreach (var item in ListResponseCreationAndCheckDocument)
@@ -162,8 +166,11 @@ namespace TestUnitaire
                     File.WriteAllText(@"C:\Projects\Test\docTest\" + item.Item2.Replace(".pdf", ".json"), BeutyJson);
 
                 }
-                //*/
 
+
+                DocToAnalyse docToAnalyse = new DocToAnalyse();
+                var jsonToAnalyse = File.ReadAllText(urlJsonToAnalyse);
+                docToAnalyse = JsonConvert.DeserializeObject<DocToAnalyse>(jsonToAnalyse);
 
             }
             catch (Exception e)
@@ -173,6 +180,26 @@ namespace TestUnitaire
             }
 
         }
+        //public class IdDocumentToVerify
+        //{
+        //    public string nom { get}
+        //}
+        public bool AnalyseJson(DocToAnalyse docToAnalyse , string TypeDocument)
+        {
+            var result = false;
+            switch (TypeDocument)
+            {
+                case "ID":
+
+                    break;
+
+            }
+
+
+            return result;
+        }
+
+
 
         public string HelperAllFile(string[] AllFile, string url)
         {
@@ -218,7 +245,7 @@ namespace TestUnitaire
             {
                 img.Add(new Image() { type = "DL", documentPart = DocumentPart.VERSO, data = VersoBase64 });
             }
-            RootObject rootObject = new RootObject() { location = "", type = TypeDoc, images = img, inputData = dataTest };
+            RootObject rootObject = new RootObject() { location = "", type = TypeDoc, images = img/*, inputData = dataTest */};
             var jsonDocument = JsonConvert.SerializeObject(rootObject);
             return jsonDocument;
         }
